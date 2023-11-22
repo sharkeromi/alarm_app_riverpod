@@ -1,4 +1,5 @@
 import 'package:alarm_app_riverpod/const/colors.dart';
+import 'package:alarm_app_riverpod/views/set_alarm_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -13,7 +14,13 @@ class HomePage extends StatelessWidget {
         child: FloatingActionButton(
           elevation: 0,
           shape: const CircleBorder(),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) =>  SetAlarm(),
+              ),
+            );
+          },
           backgroundColor: cPasteColor,
           child: const Icon(
             Icons.add,
