@@ -26,7 +26,7 @@ class SetAlarm extends ConsumerWidget {
             Navigator.pop(context);
           },
           child: const Icon(
-            Icons.arrow_back_ios,
+            Icons.close,
             size: 28,
             color: cTextPrimaryColor,
           ),
@@ -43,7 +43,7 @@ class SetAlarm extends ConsumerWidget {
               onTap: () {
                 Navigator.pop(context);
               },
-              child: const Icon(Icons.close, size: 28, color: cTextPrimaryColor),
+              child: const Icon(Icons.done, size: 28, color: cTextPrimaryColor),
             ),
           ),
         ],
@@ -95,15 +95,21 @@ class SetAlarm extends ConsumerWidget {
                     children: [
                       LinkUpTextRow(
                         prefixText: 'Repeat',
-                        suffixText: ref.watch(setAlarmNotifier.tempSelectedRepeatType),
+                        suffixText: ref.watch(setAlarmNotifier.selectedRepeatType),
                         onPressed: () {
+                          if (ref.read(setAlarmNotifier.selectedRepeatType.notifier).state != '') {
+                            ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state = ref.read(setAlarmNotifier.selectedRepeatType.notifier).state;
+                          }
                           globalController.commonBottomSheet(
                               context: context,
                               content: RepeatBottomSheetContent(),
                               onPressCloseButton: () {
                                 Navigator.pop(context);
                               },
-                              onPressRightButton: () {},
+                              onPressRightButton: () {
+                                ref.read(setAlarmNotifier.selectedRepeatType.notifier).state = ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state;
+                                Navigator.pop(context);
+                              },
                               rightText: 'Done',
                               rightTextStyle: const TextStyle(color: cPrimaryColor, fontSize: 16),
                               title: 'Repeat type',

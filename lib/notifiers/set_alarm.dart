@@ -17,6 +17,12 @@ class SetAlarmNotifier extends ChangeNotifier {
     },
   );
 
+  final selectedRepeatType= StateProvider<String>(
+    (ref) {
+      return '';
+    },
+  );
+
 
   String getDifference(DateTime setAlarm) {
     if (setAlarm.isBefore(DateTime.now())) {
