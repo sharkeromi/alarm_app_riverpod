@@ -19,7 +19,6 @@ class SetAlarm extends ConsumerWidget {
       backgroundColor: cWhiteColor,
       appBar: AppBar(
         elevation: 0,
-        // systemOverlayStyle: SystemUiOverlayStyle.dark,
         backgroundColor: cWhiteColor,
         leading: InkWell(
           onTap: () {
@@ -36,17 +35,6 @@ class SetAlarm extends ConsumerWidget {
           style: TextStyle(fontSize: 20, color: cTextPrimaryColor),
         ),
         centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: const Icon(Icons.done, size: 28, color: cTextPrimaryColor),
-            ),
-          ),
-        ],
       ),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
