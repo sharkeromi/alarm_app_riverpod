@@ -32,7 +32,7 @@ class CustomListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(minHeight: 45),
+      constraints: const BoxConstraints(minHeight: 45),
       decoration: BoxDecoration(
         color: itemColor,
         border: Border.all(color: borderColor ?? itemColor),

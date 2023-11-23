@@ -60,33 +60,29 @@ class SetAlarm extends ConsumerWidget {
               ),
               SizedBox(
                 height: 200,
-                child: CupertinoTheme(
-                  data: const CupertinoThemeData(
-                      primaryColor: cPrimaryColor, applyThemeToAll: true, primaryContrastingColor: cPrimaryColor, barBackgroundColor: cPrimaryColor),
-                  child: CupertinoDatePicker(
-                      initialDateTime: DateTime.now(),
-                      mode: CupertinoDatePickerMode.time,
-                      onDateTimeChanged: (v) {
-                        ref.read(setAlarmNotifier.pickedTimeProvider.notifier).state = v;
-                        setAlarmNotifier.getDifference(v);
-                      }),
-                ),
+                child: CupertinoDatePicker(
+                    initialDateTime: DateTime.now(),
+                    mode: CupertinoDatePickerMode.time,
+                    onDateTimeChanged: (v) {
+                      ref.read(setAlarmNotifier.pickedTimeProvider.notifier).state = v;
+                      setAlarmNotifier.getDifference(v);
+                    }),
               ),
               Text(
                 '${setAlarmNotifier.getDifference(ref.watch(setAlarmNotifier.pickedTimeProvider))} remaining',
-                style: const TextStyle(fontSize: 16, color: cTextSecondaryColor),
+                style: const TextStyle(fontSize: 16, color: cPrimaryColor),
               ),
               const SizedBox(
                 height: 20,
               ),
               Container(
                 width: MediaQuery.of(context).size.width - 20,
-                height: 180,
+                // height: 180,
                 decoration: BoxDecoration(
                   color: cPrimaryTintColor,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
-                    BoxShadow(color: cTextPrimaryColor.withOpacity(.2), offset: Offset(3, 3), blurRadius: 20),
+                    BoxShadow(color: cTextPrimaryColor.withOpacity(.2), offset: const Offset(3, 3), blurRadius: 20),
                   ],
                 ),
                 child: Padding(
@@ -102,13 +98,26 @@ class SetAlarm extends ConsumerWidget {
                           }
                           globalController.commonBottomSheet(
                               context: context,
-                              content: RepeatBottomSheetContent(),
+                              content: const RepeatBottomSheetContent(),
                               onPressCloseButton: () {
                                 Navigator.pop(context);
                               },
                               onPressRightButton: () {
-                                ref.read(setAlarmNotifier.selectedRepeatType.notifier).state = ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state;
                                 Navigator.pop(context);
+                                if (ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state == 'Custom') {
+                                  globalController.commonBottomSheet(
+                                      context: context,
+                                      content: const CustomRepeatTypeBottomSheetContent(),
+                                      onPressCloseButton: () {
+                                        Navigator.pop(context);
+                                      },
+                                      onPressRightButton: () {},
+                                      rightText: 'Done',
+                                      rightTextStyle: const TextStyle(color: cPrimaryColor, fontSize: 16),
+                                      title: 'Select custom days',
+                                      isRightButtonShow: true);
+                                }
+                                ref.read(setAlarmNotifier.selectedRepeatType.notifier).state = ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state;
                               },
                               rightText: 'Done',
                               rightTextStyle: const TextStyle(color: cPrimaryColor, fontSize: 16),
@@ -116,6 +125,29 @@ class SetAlarm extends ConsumerWidget {
                               isRightButtonShow: true);
                         },
                       ),
+                      kH12sizedBox,
+                      LinkUpTextRow(
+                        prefixText: 'Vibration',
+                        trailing: Transform.scale(
+                          scale: .7,
+                          child: CupertinoSwitch(
+                            activeColor: cPrimaryColor,
+                            thumbColor: cPrimaryTintColor,
+                            value: ref.watch(setAlarmNotifier.isVibrationOn),
+                            onChanged: (v) {
+                              ref.read(setAlarmNotifier.isVibrationOn.notifier).state = v;
+                            },
+                          ),
+                        ),
+                      ),
+                      kH12sizedBox,
+                      LinkUpTextRow(
+                        prefixText: 'Ringtone',
+                        onPressed: () {
+                          setAlarmNotifier.selectFile();
+                        },
+                        suffixText: setAlarmNotifier.ringtone,
+                      )
                     ],
                   ),
                 ),
@@ -129,9 +161,11 @@ class SetAlarm extends ConsumerWidget {
 }
 
 class LinkUpTextRow extends StatelessWidget {
-  const LinkUpTextRow({super.key, required this.prefixText, required this.suffixText, this.onPressed});
-  final String prefixText, suffixText;
+  const LinkUpTextRow({super.key, required this.prefixText, this.suffixText, this.onPressed, this.trailing});
+  final String prefixText;
+  final String? suffixText;
   final VoidCallback? onPressed;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -146,14 +180,21 @@ class LinkUpTextRow extends StatelessWidget {
                 style: const TextStyle(color: cTextPrimaryColor, fontSize: 16),
               ),
             ),
-            Text(
-              suffixText,
-              style: const TextStyle(color: cTextSecondaryColor, fontSize: 14),
-            ),
-            Icon(
-              Icons.navigate_next_rounded,
-              color: cIconColor,
-            )
+            if (trailing == null)
+              SizedBox(
+                width: 150,
+                child: Text(
+                  suffixText ?? '',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: cTextSecondaryColor, fontSize: 14),
+                ),
+              ),
+            if (trailing == null)
+              const Icon(
+                Icons.navigate_next_rounded,
+                color: cIconColor,
+              ),
+            if (trailing != null) trailing!
           ],
         ),
       ),
@@ -197,3 +238,86 @@ class RepeatBottomSheetContent extends ConsumerWidget {
     );
   }
 }
+
+class CustomRepeatTypeBottomSheetContent extends ConsumerWidget {
+  const CustomRepeatTypeBottomSheetContent({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final setAlarmNotifier = ref.watch(setAlarmChangeNotifierProvider);
+    return Column(
+      children: [
+        ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: setAlarmNotifier.weekDays.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: CustomListTile(
+                title: setAlarmNotifier.weekDays[index],
+                itemColor: setAlarmNotifier.selectedDays.contains(setAlarmNotifier.weekDays[index]) ? cPrimaryTintColor : cWhiteColor,
+                borderColor: setAlarmNotifier.selectedDays.contains(setAlarmNotifier.weekDays[index]) ? cPrimaryColor : cOutLineColor,
+                onPressed: () {
+                  if (setAlarmNotifier.selectedDays.contains(setAlarmNotifier.weekDays[index])) {
+                    setAlarmNotifier.removeDay(setAlarmNotifier.weekDays[index]);
+                  } else {
+                    setAlarmNotifier.addDay(setAlarmNotifier.weekDays[index]);
+                  }
+                },
+                trailing: CustomRadioButton(
+                  isSelected: setAlarmNotifier.selectedDays.contains(setAlarmNotifier.weekDays[index]) ? true : false,
+                  onChanged: () {
+                    //ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state = setAlarmNotifier.weekDays[index];
+                    if (setAlarmNotifier.selectedDays.contains(setAlarmNotifier.weekDays[index])) {
+                      setAlarmNotifier.removeDay(setAlarmNotifier.weekDays[index]);
+                    } else {
+                      setAlarmNotifier.addDay(setAlarmNotifier.weekDays[index]);
+                    }
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+// class SelectRingtoneBottomSheetContent extends ConsumerWidget {
+//   const SelectRingtoneBottomSheetContent({super.key});
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final setAlarmNotifier = ref.watch(setAlarmChangeNotifierProvider);
+//     return Column(
+//       children: [
+//         ListView.builder(
+//           physics: const NeverScrollableScrollPhysics(),
+//           shrinkWrap: true,
+//           itemCount: setAlarmNotifier.songs.length,
+//           itemBuilder: (BuildContext context, int index) {
+//             return Padding(
+//               padding: const EdgeInsets.only(bottom: 8),
+//               child: CustomListTile(
+//                 itemColor: ref.watch(setAlarmNotifier.tempSelectedRepeatType) == setAlarmNotifier.repeatType[index] ? cPrimaryTintColor : cWhiteColor,
+//                 onPressed: () {
+//                   ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state = setAlarmNotifier.repeatType[index];
+//                 },
+//                 borderColor: ref.watch(setAlarmNotifier.tempSelectedRepeatType) == setAlarmNotifier.repeatType[index] ? cPrimaryColor : cOutLineColor,
+//                 title: setAlarmNotifier.songs[index].path.split('/').last,
+//                 trailing: CustomRadioButton(
+//                   isSelected: ref.watch(setAlarmNotifier.tempSelectedRepeatType) == setAlarmNotifier.repeatType[index] ? true : false,
+//                   onChanged: () {
+//                     ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state = setAlarmNotifier.repeatType[index];
+//                   },
+//                 ),
+//               ),
+//             );
+//           },
+//         ),
+//       ],
+//     );
+//   }
+// }

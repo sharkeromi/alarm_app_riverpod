@@ -3,7 +3,7 @@ import 'package:alarm_app_riverpod/widgets/custom_icon_button.dart';
 import 'package:alarm_app_riverpod/widgets/custom_text_button.dart';
 import 'package:flutter/material.dart';
 
-class GlobalController{
+class GlobalController {
   void commonBottomSheet({
     required context,
     required Widget content,
@@ -14,7 +14,6 @@ class GlobalController{
     required String title,
     required bool isRightButtonShow,
     double? bottomSheetHeight,
-
   }) {
     showModalBottomSheet<void>(
       shape: const RoundedRectangleBorder(
@@ -26,8 +25,7 @@ class GlobalController{
           alignment: Alignment.topCenter,
           children: [
             Container(
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)), color: cWhiteColor),
+              decoration: const BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)), color: cWhiteColor),
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).viewInsets.bottom > 0.0 ? height * .9 : bottomSheetHeight ?? height * .5,
               constraints: BoxConstraints(minHeight: bottomSheetHeight ?? height * .5, maxHeight: height * .9),
@@ -76,15 +74,44 @@ class GlobalController{
               Positioned(
                 top: 20,
                 right: 10,
-                child:  CustomTextButton(
-                      onPressed:  onPressRightButton,
-                      text: rightText,
-                      textStyle: rightTextStyle ,
-                    ),
+                child: CustomTextButton(
+                  onPressed: onPressRightButton,
+                  text: rightText,
+                  textStyle: rightTextStyle,
+                ),
               ),
           ],
         );
       },
     );
   }
+
+  // void getStoragePermission() async {
+  //   PermissionStatus status = await Permission.storage.status;
+  //   if (!status.isGranted) {
+  //     status = await Permission.storage.request();
+  //   }
+  //   if (status.isGranted) {
+  //     // Access the external storage
+  //     log('Storage ok');
+  //   } else {
+  //     log('Storage not ok');
+  //     // Handle the case where the permission is not granted
+  //   }
+  // }
+
+  // void getManageStoragePermission() async {
+  //   PermissionStatus status = await Permission.manageExternalStorage.status;
+  //   if (!status.isGranted) {
+  //     status = await Permission.manageExternalStorage.request();
+  //   }
+
+  //   if (status.isGranted) {
+  //     // Access the external storage
+  //     log('External Storage ok');
+  //   } else {
+  //     // Handle the case where the permission is not granted
+  //     log('External Storage not ok');
+  //   }
+  // }
 }

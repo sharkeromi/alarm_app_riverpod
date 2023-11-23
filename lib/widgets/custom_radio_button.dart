@@ -25,7 +25,7 @@ class CustomRadioButton extends StatelessWidget {
             ),
       child: Center(
         child: (Theme.of(context).platform == TargetPlatform.iOS && isSelected)
-            ? Icon(
+            ? const Icon(
                 Icons.check,
                 size: 18,
                 color: cPrimaryColor,

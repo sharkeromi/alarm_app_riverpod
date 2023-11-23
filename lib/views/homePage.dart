@@ -1,9 +1,11 @@
 import 'package:alarm_app_riverpod/const/colors.dart';
+
 import 'package:alarm_app_riverpod/views/set_alarm_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class HomePage extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) =>  SetAlarm(),
+                builder: (context) => SetAlarm(),
               ),
             );
           },
