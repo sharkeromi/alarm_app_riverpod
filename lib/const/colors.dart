@@ -16,6 +16,8 @@ const Color cWarningColor = Color(0xFFFFBB0D);
 const Color cSuccessColor = Color(0xFF00D261);
 const Color cRedAccentColor = Color(0xFFF76554);
 const Color cTransparentColor = Colors.transparent;
+const Color cPlaceHolderColor = Color(0xFFAEAEAE);
+
 
 //* new color
 const Color cPrimaryTintColor = Color(0xFFD8DEFF);
@@ -44,3 +46,18 @@ const kW8sizedBox = SizedBox(width: 8);
 const kW12sizedBox = SizedBox(width: 12);
 const kW16sizedBox = SizedBox(width: 16);
 const kW20sizedBox = SizedBox(width: 20);
+
+const double kButtonHeight = 44.0;
+
+
+bool isDeviceScreenLarge() {
+  if (height > 750) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+dynamic screenWiseSize(size, difference) {
+  return isDeviceScreenLarge() ? size : size - difference;
+}

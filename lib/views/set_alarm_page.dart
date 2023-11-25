@@ -1,6 +1,7 @@
 import 'package:alarm_app_riverpod/const/colors.dart';
-import 'package:alarm_app_riverpod/global_controller.dart';
+import 'package:alarm_app_riverpod/controllers/global_controller.dart';
 import 'package:alarm_app_riverpod/providers.dart';
+import 'package:alarm_app_riverpod/widgets/custom_button.dart';
 import 'package:alarm_app_riverpod/widgets/custom_list_tile.dart';
 import 'package:alarm_app_riverpod/widgets/custom_radio_button.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,6 +37,12 @@ class SetAlarm extends ConsumerWidget {
         ),
         centerTitle: true,
       ),
+      floatingActionButton: CustomElevatedButton(
+        isCircularHead: true,
+        label: 'Save',
+        onPressed: () {},
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
