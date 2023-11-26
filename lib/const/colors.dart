@@ -17,6 +17,7 @@ const Color cSuccessColor = Color(0xFF00D261);
 const Color cRedAccentColor = Color(0xFFF76554);
 const Color cTransparentColor = Colors.transparent;
 const Color cPlaceHolderColor = Color(0xFFAEAEAE);
+const Color splashScreenBackground = Color(0xFFF5F3FD);
 
 
 //* new color

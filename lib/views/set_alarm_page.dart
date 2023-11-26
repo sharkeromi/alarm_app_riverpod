@@ -40,7 +40,9 @@ class SetAlarm extends ConsumerWidget {
       floatingActionButton: CustomElevatedButton(
         isCircularHead: true,
         label: 'Save',
-        onPressed: () {},
+        onPressed: () {
+          setAlarmNotifier.saveAlarm();
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SizedBox(
@@ -60,6 +62,7 @@ class SetAlarm extends ConsumerWidget {
                     mode: CupertinoDatePickerMode.time,
                     onDateTimeChanged: (v) {
                       ref.read(setAlarmNotifier.pickedTimeProvider.notifier).state = v;
+                      setAlarmNotifier.pickTime(v);
                       setAlarmNotifier.getDifference(v);
                     }),
               ),
@@ -86,10 +89,10 @@ class SetAlarm extends ConsumerWidget {
                     children: [
                       LinkUpTextRow(
                         prefixText: 'Repeat',
-                        suffixText: ref.watch(setAlarmNotifier.selectedRepeatType),
+                        suffixText: setAlarmNotifier.selectedRepeatType,
                         onPressed: () {
-                          if (ref.read(setAlarmNotifier.selectedRepeatType.notifier).state != '') {
-                            ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state = ref.read(setAlarmNotifier.selectedRepeatType.notifier).state;
+                          if (setAlarmNotifier.selectedRepeatType != '') {
+                            ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state = setAlarmNotifier.selectedRepeatType;
                           }
                           globalController.commonBottomSheet(
                               context: context,
@@ -112,7 +115,8 @@ class SetAlarm extends ConsumerWidget {
                                       title: 'Select custom days',
                                       isRightButtonShow: true);
                                 }
-                                ref.read(setAlarmNotifier.selectedRepeatType.notifier).state = ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state;
+                                // setAlarmNotifier.selectedRepeatType = ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state;
+                                setAlarmNotifier.setRepeatStatus(ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state);
                               },
                               rightText: 'Done',
                               rightTextStyle: const TextStyle(color: cPrimaryColor, fontSize: 16),
@@ -131,6 +135,7 @@ class SetAlarm extends ConsumerWidget {
                             value: ref.watch(setAlarmNotifier.isVibrationOn),
                             onChanged: (v) {
                               ref.read(setAlarmNotifier.isVibrationOn.notifier).state = v;
+                              setAlarmNotifier.setVibrationStatus(v);
                             },
                           ),
                         ),
@@ -177,7 +182,7 @@ class LinkUpTextRow extends StatelessWidget {
             ),
             if (trailing == null)
               SizedBox(
-                width: 150,
+                // width: 150,
                 child: Text(
                   suffixText ?? '',
                   overflow: TextOverflow.ellipsis,
