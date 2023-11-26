@@ -27,8 +27,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: false,
       ),
       debugShowCheckedModeBanner: false,
-      // routerDelegate: goRouter.routerDelegate,
-      // routeInformationParser: goRouter.routeInformationParser,
       routerConfig: goRouter,
     );
   }

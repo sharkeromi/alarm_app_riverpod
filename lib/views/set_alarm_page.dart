@@ -1,4 +1,5 @@
 import 'package:alarm_app_riverpod/const/colors.dart';
+import 'package:alarm_app_riverpod/const/routes.dart';
 import 'package:alarm_app_riverpod/controllers/global_controller.dart';
 import 'package:alarm_app_riverpod/providers.dart';
 import 'package:alarm_app_riverpod/widgets/custom_button.dart';
@@ -23,7 +24,8 @@ class SetAlarm extends ConsumerWidget {
         backgroundColor: cWhiteColor,
         leading: InkWell(
           onTap: () {
-            Navigator.pop(context);
+            // Navigator.pop(context);
+            goRouter.pop();
           },
           child: const Icon(
             Icons.close,
@@ -99,6 +101,7 @@ class SetAlarm extends ConsumerWidget {
                               content: const RepeatBottomSheetContent(),
                               onPressCloseButton: () {
                                 Navigator.pop(context);
+                                // goRouter.go(krHomePage);
                               },
                               onPressRightButton: () {
                                 Navigator.pop(context);

@@ -6,5 +6,5 @@ final setAlarmChangeNotifierProvider = ChangeNotifierProvider<SetAlarmNotifier>(
  },);
 
  final splashScreenProvider = FutureProvider<void>((ref) async {
- await Future.delayed(Duration(seconds: 3));
+//  await Future.delayed(Duration(seconds: 3));
 });

@@ -7,19 +7,20 @@ import 'package:flutter/material.dart';
 
 class SplashScreenController extends ChangeNotifier {
   final SpController _spController = SpController();
+   final SetAlarmNotifier setAlarmNotifier;
 
-  SplashScreenController() {
+  SplashScreenController(this.setAlarmNotifier) {
     startSplashScreen();
   }
 
   Timer startSplashScreen() {
-    SetAlarmNotifier setAlarmNotifier = SetAlarmNotifier();
     var duration = const Duration(seconds: 5);
     return Timer(
       duration,
       () async {
-        setAlarmNotifier.alarmList.clear();
+        // setAlarmNotifier.alarmList.clear();
         setAlarmNotifier.alarmList = await _spController.getAlarmList();
+        // log()
         log(setAlarmNotifier.alarmList.toString());
         goRouter.go(krHomePage);
       },

@@ -10,19 +10,19 @@ const krSetAlarm = '/set-alarm';
 
 final routes = [
   GoRoute(
-  path: krSplashScreen,
-  pageBuilder: (context, state) =>  MaterialPage(child: SplashScreen()),
- ),
- GoRoute(
-  path: krHomePage,
-  pageBuilder: (context, state) => const MaterialPage(child:  HomePage()),
- ),
- GoRoute(
-  path: krSetAlarm,
-  pageBuilder: (context, state) => MaterialPage(child: SetAlarm()),
- ),
+    path: krSplashScreen,
+    pageBuilder: (context, state) => MaterialPage(child: SplashScreen()),
+  ),
+  GoRoute(
+    path: krHomePage,
+    pageBuilder: (context, state) => MaterialPage(child: HomePage()),
+  ),
+  GoRoute(
+    path: krSetAlarm,
+    pageBuilder: (context, state) => MaterialPage(child: SetAlarm()),
+  ),
 ];
 
 final goRouter = GoRouter(
- routes: routes,
+  routes: routes,
 );
