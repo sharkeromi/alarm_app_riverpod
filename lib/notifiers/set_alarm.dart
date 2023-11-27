@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
+import 'package:alarm_app_riverpod/const/routes.dart';
 import 'package:alarm_app_riverpod/controllers/sp_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +18,7 @@ class SetAlarmNotifier extends ChangeNotifier {
 
   final pickedTimeProvider = StateProvider<DateTime>((ref) => DateTime.now());
   String pickedTime = '';
+  DateTime selectedDateTime = DateTime.now();
   final tempSelectedRepeatType = StateProvider<String>((ref) => '');
   // final selectedRepeatType = StateProvider<String>((ref) => '');
   String selectedRepeatType = '';
@@ -42,7 +46,11 @@ class SetAlarmNotifier extends ChangeNotifier {
   }
 
   void pickTime(time) {
-    pickedTime = DateFormat('HH:mm:ss').format(time);
+    selectedDateTime = time;
+    if (selectedDateTime.isBefore(DateTime.now())) {
+      selectedDateTime = selectedDateTime.add(const Duration(days: 1));
+    }
+    pickedTime = DateFormat('HH:mm a').format(time);
     notifyListeners();
   }
 
@@ -79,12 +87,31 @@ class SetAlarmNotifier extends ChangeNotifier {
   void saveAlarm() async {
     alarmList.clear();
     // await SpController().deleteAllData();
-    Map<String, dynamic> alarmDetails = {"time": pickedTime, "repeat": selectedRepeatType, "vibration": vibration, "ringtone": ringtonePath};
-    // alarmList.add(alarmDetails);
-    String encodedMap = json.encode(alarmDetails);
-    await SpController().saveAlarmDetails(encodedMap);
-    await SpController().saveAlarmList(alarmDetails);
-    alarmList = await SpController().getAlarmList();
-    log(alarmList.toString());
+      Map<String, dynamic> alarmDetails = {
+        "time": pickedTime,
+        "dateTime": selectedDateTime.toString(),
+        "repeat": selectedRepeatType,
+        "vibration": vibration,
+        "ringtone": ringtonePath
+      };
+      String encodedMap = json.encode(alarmDetails);
+      await SpController().saveAlarmDetails(encodedMap);
+      await SpController().saveAlarmList(alarmDetails);
+      alarmList = await SpController().getAlarmList();
+      log(alarmList.toString());
+      goRouter.pop();
+      final alarmSettings = AlarmSettings(
+        id: alarmList.length - 1,
+        dateTime: selectedDateTime,
+        assetAudioPath: 'assets/marimba.mp3',
+        loopAudio: true,
+        vibrate: vibration,
+        volumeMax: true,
+        fadeDuration: 3.0,
+        notificationTitle: 'This is the title',
+        notificationBody: 'This is the body',
+        enableNotificationOnKill: true,
+      );
+      Alarm.set(alarmSettings: alarmSettings);
   }
 }

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 const Color cTextPrimaryColor = Color(0xFF161B1D);
 const Color cTextSecondaryColor = Color(0xFF97999B);
 const Color cIconColor = Color(0xFF97999B);
-const Color cPasteColor = Color(0xFF35DFF1);
-const Color cPrimaryColor = Color(0xFF487BFF);
+const Color cPasteColor = Color(0xFF38DDF1);
+const Color cPrimaryColor = Color(0xFF657AFF);
 const Color cSplashBackground = Color.fromARGB(255, 226, 224, 247);
 const Color cGradientLinearPrimaryColor = Color(0xFF546EF7);
 const Color cBackgroundNeutralColor = Color(0xFFF6F6F6);
@@ -19,12 +19,10 @@ const Color cTransparentColor = Colors.transparent;
 const Color cPlaceHolderColor = Color(0xFFAEAEAE);
 const Color splashScreenBackground = Color(0xFFF5F3FD);
 
-
 //* new color
-const Color cPrimaryTintColor = Color(0xFFD8DEFF);
+const Color cPrimaryTintColor = Color(0xFF98A8FF);
 const Color cBlueAccent = Color(0XFFECEBFF);
 const Color cBlueShade = Color(0XFFB8B1FF);
-
 
 double height = 0.0;
 double width = 0.0;
@@ -49,7 +47,6 @@ const kW16sizedBox = SizedBox(width: 16);
 const kW20sizedBox = SizedBox(width: 20);
 
 const double kButtonHeight = 44.0;
-
 
 bool isDeviceScreenLarge() {
   if (height > 750) {

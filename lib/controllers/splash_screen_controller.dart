@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 class SplashScreenController extends ChangeNotifier {
   final SpController _spController = SpController();
    final SetAlarmNotifier setAlarmNotifier;
-
   SplashScreenController(this.setAlarmNotifier) {
     startSplashScreen();
   }

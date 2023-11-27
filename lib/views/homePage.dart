@@ -1,22 +1,19 @@
-import 'dart:developer';
 import 'package:alarm_app_riverpod/const/colors.dart';
 import 'package:alarm_app_riverpod/const/routes.dart';
-
 import 'package:alarm_app_riverpod/providers.dart';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomePage extends ConsumerWidget {
-  HomePage({
+  const HomePage({
     super.key,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final homeNotifier = ref.watch(homeChangeNotifierProvider);
     final setAlarmNotifier = ref.watch(setAlarmChangeNotifierProvider);
-
-    log('hello: ${setAlarmNotifier.alarmList}');
     return Scaffold(
       backgroundColor: cPrimaryColor,
       floatingActionButton: Padding(
@@ -25,11 +22,6 @@ class HomePage extends ConsumerWidget {
           elevation: 0,
           shape: const CircleBorder(),
           onPressed: () {
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (context) => SetAlarm(),
-            //   ),
-            // );
             goRouter.push(krSetAlarm);
           },
           backgroundColor: cPasteColor,
@@ -51,21 +43,64 @@ class HomePage extends ConsumerWidget {
               kH40sizedBox,
               const Text(
                 'Alarms',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cBlueAccent),
               ),
-              kH20sizedBox,
-              ListView.builder(
-                  // physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: setAlarmNotifier.alarmList.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      height: 70,
-                      width: width - 20,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), color: cRedAccentColor),
-                    );
-                  }),
-              Text('asdasd')
+              // kH20sizedBox,
+              Expanded(
+                child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: setAlarmNotifier.alarmList.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      var item = setAlarmNotifier.alarmList;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: Container(
+                          // height: 100,
+                          width: width - 20,
+                          decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(Radius.circular(20)),
+                              color: cPrimaryTintColor,
+                              boxShadow: [BoxShadow(color: cTextPrimaryColor.withOpacity(.2), blurRadius: 10, offset: Offset(0, 5))]),
+                          child: Padding(
+                            padding: const EdgeInsets.all(22.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      item[index]['time'],
+                                      style: TextStyle(color: cBlueAccent, fontSize: 28),
+                                    ),
+                                    Transform.scale(
+                                      scale: .7,
+                                      child: CupertinoSwitch(
+                                        activeColor: cPrimaryColor,
+                                        thumbColor: cPrimaryTintColor,
+                                        value: true,
+                                        onChanged: (v) {},
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                kH16sizedBox,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      item[index]['repeat'],
+                                      style: TextStyle(color: cBlueAccent, fontSize: 16),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+              ),
             ],
           ),
         ),
