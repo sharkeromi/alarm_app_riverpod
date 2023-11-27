@@ -40,6 +40,7 @@ class SetAlarm extends ConsumerWidget {
         centerTitle: true,
       ),
       floatingActionButton: CustomElevatedButton(
+        buttonColor: cPrimaryTintColor,
         isCircularHead: true,
         label: 'Save',
         onPressed: () {
@@ -133,8 +134,9 @@ class SetAlarm extends ConsumerWidget {
                         trailing: Transform.scale(
                           scale: .7,
                           child: CupertinoSwitch(
-                            activeColor: cPrimaryColor,
-                            thumbColor: cPrimaryTintColor,
+                            activeColor: cPinkColor,
+                            thumbColor: cWhiteColor,
+                            trackColor: cPrimaryColor,
                             value: ref.watch(setAlarmNotifier.isVibrationOn),
                             onChanged: (v) {
                               ref.read(setAlarmNotifier.isVibrationOn.notifier).state = v;
@@ -180,14 +182,15 @@ class LinkUpTextRow extends StatelessWidget {
             Expanded(
               child: Text(
                 '$prefixText ',
-                style: const TextStyle(color: cTextPrimaryColor, fontSize: 16),
+                style: const TextStyle(color: cWhiteColor, fontSize: 16),
               ),
             ),
             if (trailing == null)
               SizedBox(
-                // width: 150,
+                width: 150,
                 child: Text(
                   suffixText ?? '',
+                  textAlign: TextAlign.right,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(color: cTextSecondaryColor, fontSize: 14),
                 ),
@@ -195,7 +198,7 @@ class LinkUpTextRow extends StatelessWidget {
             if (trailing == null)
               const Icon(
                 Icons.navigate_next_rounded,
-                color: cIconColor,
+                color: cWhiteColor,
               ),
             if (trailing != null) trailing!
           ],

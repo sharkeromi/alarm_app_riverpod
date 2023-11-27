@@ -1,12 +1,12 @@
 import 'package:alarm/alarm.dart';
 import 'package:alarm_app_riverpod/const/colors.dart';
+import 'package:alarm_app_riverpod/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 class ExampleAlarmRingScreen extends StatelessWidget {
   final AlarmSettings? alarmSettings;
 
-  const ExampleAlarmRingScreen({Key? key,  this.alarmSettings})
-      : super(key: key);
+  const ExampleAlarmRingScreen({Key? key, this.alarmSettings}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,15 +16,18 @@ class ExampleAlarmRingScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text(
+            const Text(
               "Wake up",
-              style: Theme.of(context).textTheme.titleLarge,
+              style: TextStyle(color: cWhiteColor, fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const Text("🔔", style: TextStyle(fontSize: 50)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                RawMaterialButton(
+                CustomElevatedButton(
+                  isCircularHead: true,
+                  buttonWidth: (width / 2) - 50,
+                  buttonColor: cPrimaryTintColor,
                   onPressed: () {
                     final now = DateTime.now();
                     Alarm.set(
@@ -41,20 +44,18 @@ class ExampleAlarmRingScreen extends StatelessWidget {
                       ),
                     ).then((_) => Navigator.pop(context));
                   },
-                  child: Text(
-                    "Snooze",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                  label: "Snooze",
+                  textStyle: const TextStyle(color: cBlueAccent, fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                RawMaterialButton(
+                CustomElevatedButton(
+                  isCircularHead: true,
+                  buttonWidth: (width / 2) - 50,
+                  buttonColor: cPrimaryTintColor,
                   onPressed: () {
-                    Alarm.stop(alarmSettings!.id)
-                        .then((_) => Navigator.pop(context));
+                    Alarm.stop(alarmSettings!.id).then((_) => Navigator.pop(context));
                   },
-                  child: Text(
-                    "Stop",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                  textStyle: const TextStyle(color: cBlueAccent, fontSize: 20, fontWeight: FontWeight.bold),
+                  label: "Stop",
                 ),
               ],
             ),

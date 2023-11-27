@@ -4,6 +4,7 @@ const Color cTextPrimaryColor = Color(0xFF161B1D);
 const Color cTextSecondaryColor = Color(0xFF97999B);
 const Color cIconColor = Color(0xFF97999B);
 const Color cPasteColor = Color(0xFF38DDF1);
+const Color cPinkColor = Color(0xFFFAB2D8);
 const Color cPrimaryColor = Color(0xFF657AFF);
 const Color cSplashBackground = Color.fromARGB(255, 226, 224, 247);
 const Color cGradientLinearPrimaryColor = Color(0xFF546EF7);
@@ -21,6 +22,7 @@ const Color splashScreenBackground = Color(0xFFF5F3FD);
 
 //* new color
 const Color cPrimaryTintColor = Color(0xFF98A8FF);
+const Color cDisabledTextColor = Color.fromARGB(255, 205, 213, 254);
 const Color cBlueAccent = Color(0XFFECEBFF);
 const Color cBlueShade = Color(0XFFB8B1FF);
 
@@ -45,6 +47,7 @@ const kW8sizedBox = SizedBox(width: 8);
 const kW12sizedBox = SizedBox(width: 12);
 const kW16sizedBox = SizedBox(width: 16);
 const kW20sizedBox = SizedBox(width: 20);
+const kW60sizedBox = SizedBox(width: 60);
 
 const double kButtonHeight = 44.0;
 

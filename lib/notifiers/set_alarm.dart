@@ -17,22 +17,30 @@ class SetAlarmNotifier extends ChangeNotifier {
   List<dynamic> alarmList = [];
 
   final pickedTimeProvider = StateProvider<DateTime>((ref) => DateTime.now());
+  final switchProvider = StateProvider.family<bool, int>((ref, index) => true);
   String pickedTime = '';
   DateTime selectedDateTime = DateTime.now();
   final tempSelectedRepeatType = StateProvider<String>((ref) => '');
+  final selectedId = StateProvider<int>((ref) => -1);
+  final selectedIndex = StateProvider<int>((ref) => -1);
   // final selectedRepeatType = StateProvider<String>((ref) => '');
   String selectedRepeatType = '';
   final isVibrationOn = StateProvider<bool>((ref) => false);
+  final enableDeleteOption = StateProvider<bool>((ref) => false);
   bool vibration = false;
   String ringtone = '';
   String ringtonePath = '';
+  bool isAlarmOn = true;
+
+  void update() {
+    notifyListeners();
+  }
 
   void selectFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.audio);
     if (result != null) {
       File file = File(result.files.single.path!);
       // Do something with the file
-      log(file.uri.toString());
       log(file.path.toString());
       ringtonePath = file.path.toString();
       var nameFilter = file.path.toString().split('file_picker/');
@@ -74,6 +82,25 @@ class SetAlarmNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  void toggleAlarm(index, v) {
+    for (int i = 0; i < alarmList.length; i++) {
+      if (i == index) {
+        alarmList[i]['isAlarmOn'] = v;
+      }
+    }
+    notifyListeners();
+  }
+
+  DateTime setAlarmTimeAgain(prevTime) {
+    selectedDateTime = DateTime.parse(prevTime);
+    if (selectedDateTime.isBefore(DateTime.now())) {
+      selectedDateTime = selectedDateTime.add(const Duration(days: 1));
+    }
+    log(selectedDateTime.toString());
+    notifyListeners();
+    return selectedDateTime;
+  }
+
   String getDifference(DateTime setAlarm) {
     if (setAlarm.isBefore(DateTime.now())) {
       Duration duration = const Duration(hours: 24) + setAlarm.difference(DateTime.now());
@@ -87,31 +114,34 @@ class SetAlarmNotifier extends ChangeNotifier {
   void saveAlarm() async {
     alarmList.clear();
     // await SpController().deleteAllData();
-      Map<String, dynamic> alarmDetails = {
-        "time": pickedTime,
-        "dateTime": selectedDateTime.toString(),
-        "repeat": selectedRepeatType,
-        "vibration": vibration,
-        "ringtone": ringtonePath
-      };
-      String encodedMap = json.encode(alarmDetails);
-      await SpController().saveAlarmDetails(encodedMap);
-      await SpController().saveAlarmList(alarmDetails);
-      alarmList = await SpController().getAlarmList();
-      log(alarmList.toString());
-      goRouter.pop();
-      final alarmSettings = AlarmSettings(
-        id: alarmList.length - 1,
-        dateTime: selectedDateTime,
-        assetAudioPath: 'assets/marimba.mp3',
-        loopAudio: true,
-        vibrate: vibration,
-        volumeMax: true,
-        fadeDuration: 3.0,
-        notificationTitle: 'This is the title',
-        notificationBody: 'This is the body',
-        enableNotificationOnKill: true,
-      );
-      Alarm.set(alarmSettings: alarmSettings);
+    var id = DateTime.now().millisecondsSinceEpoch % 10000;
+    Map<String, dynamic> alarmDetails = {
+      'id': id,
+      "time": pickedTime,
+      "dateTime": selectedDateTime.toString(),
+      "repeat": selectedRepeatType,
+      "vibration": vibration,
+      "ringtone": ringtonePath,
+      "isAlarmOn": true
+    };
+    String encodedMap = json.encode(alarmDetails);
+    await SpController().saveAlarmDetails(encodedMap);
+    await SpController().saveAlarmList(alarmDetails);
+    alarmList = await SpController().getAlarmList();
+    log(alarmList.toString());
+    goRouter.pop();
+    final alarmSettings = AlarmSettings(
+      id: id,
+      dateTime: selectedDateTime,
+      assetAudioPath: ringtonePath,
+      loopAudio: true,
+      vibrate: vibration,
+      volumeMax: true,
+      fadeDuration: 3.0,
+      notificationTitle: 'This is the title',
+      notificationBody: 'This is the body',
+      enableNotificationOnKill: false,
+    );
+    Alarm.set(alarmSettings: alarmSettings);
   }
 }
