@@ -58,11 +58,90 @@ class SetAlarm extends ConsumerWidget {
               const SizedBox(
                 height: 20,
               ),
+              Container(
+                height: 40,
+                width: width - 160,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: cBackgroundNeutralColor2,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 5),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: TextButton(
+                            onPressed: () {
+                              ref.read(setAlarmNotifier.firstButtonClicked.notifier).state = true;
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              splashFactory: InkSplash.splashFactory,
+                            ),
+                            child: Container(
+                              height: 30,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: ref.watch(setAlarmNotifier.firstButtonClicked) ? cPrimaryTintColor : cBackgroundNeutralColor2,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '12H Fromat ',
+                                  style: TextStyle(color: ref.watch(setAlarmNotifier.firstButtonClicked) ? cWhiteColor : cTextSecondaryColor, fontSize: 14),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 5),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: TextButton(
+                            onPressed: () {
+                              ref.read(setAlarmNotifier.firstButtonClicked.notifier).state = false;
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              splashFactory: InkSplash.splashFactory,
+                            ),
+                            child: Container(
+                              height: 30,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: !ref.watch(setAlarmNotifier.firstButtonClicked) ? cPrimaryTintColor : cBackgroundNeutralColor2,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '24H Fromat',
+                                  style: TextStyle(color: !ref.watch(setAlarmNotifier.firstButtonClicked) ? cWhiteColor : cTextSecondaryColor, fontSize: 14),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(
                 height: 200,
                 child: CupertinoDatePicker(
                     initialDateTime: DateTime.now(),
                     mode: CupertinoDatePickerMode.time,
+                    use24hFormat: !ref.watch(setAlarmNotifier.firstButtonClicked),
                     onDateTimeChanged: (v) {
                       ref.read(setAlarmNotifier.pickedTimeProvider.notifier).state = v;
                       setAlarmNotifier.pickTime(v);
@@ -192,7 +271,7 @@ class LinkUpTextRow extends StatelessWidget {
                   suffixText ?? '',
                   textAlign: TextAlign.right,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: cTextSecondaryColor, fontSize: 14),
+                  style: const TextStyle(color: cWhiteColor, fontSize: 14),
                 ),
               ),
             if (trailing == null)

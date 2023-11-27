@@ -26,9 +26,11 @@ class SetAlarmNotifier extends ChangeNotifier {
   // final selectedRepeatType = StateProvider<String>((ref) => '');
   String selectedRepeatType = '';
   final isVibrationOn = StateProvider<bool>((ref) => false);
+  final firstButtonClicked = StateProvider<bool>((ref) => true);
+  final secondButtonClicked = StateProvider<bool>((ref) => false);
   final enableDeleteOption = StateProvider<bool>((ref) => false);
   bool vibration = false;
-  String ringtone = '';
+  String ringtone = 'Default';
   String ringtonePath = '';
   bool isAlarmOn = true;
 
@@ -121,7 +123,7 @@ class SetAlarmNotifier extends ChangeNotifier {
       "dateTime": selectedDateTime.toString(),
       "repeat": selectedRepeatType,
       "vibration": vibration,
-      "ringtone": ringtonePath,
+      "ringtone": ringtonePath != '' ? ringtonePath : 'assets/marimba.mp3',
       "isAlarmOn": true
     };
     String encodedMap = json.encode(alarmDetails);
