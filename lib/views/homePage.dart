@@ -19,7 +19,7 @@ class HomePage extends ConsumerWidget {
     final homeNotifier = ref.watch(homeChangeNotifierProvider);
     final setAlarmNotifier = ref.watch(setAlarmChangeNotifierProvider);
     return Scaffold(
-      backgroundColor: cWhiteColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20.0),
         child: ref.watch(setAlarmNotifier.enableDeleteOption)
@@ -74,7 +74,7 @@ class HomePage extends ConsumerWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
-        backgroundColor: cWhiteColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
         elevation: 0,
         title: const Padding(
           padding: EdgeInsets.only(left: 6.0),

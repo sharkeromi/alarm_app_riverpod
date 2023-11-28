@@ -18,29 +18,30 @@ class SetAlarm extends ConsumerWidget {
     // final pickedTime = ref.watch(pickedTimeProvider);
     final setAlarmNotifier = ref.watch(setAlarmChangeNotifierProvider);
     return Scaffold(
-      backgroundColor: cWhiteColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: cWhiteColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
         leading: InkWell(
           onTap: () {
             // Navigator.pop(context);
             goRouter.pop();
           },
-          child: const Icon(
+          child: Icon(
             Icons.close,
             size: 28,
-            color: cTextPrimaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Set alarm',
-          style: TextStyle(fontSize: 20, color: cTextPrimaryColor),
+          style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.primary),
         ),
         centerTitle: true,
       ),
       floatingActionButton: CustomElevatedButton(
         buttonColor: cPrimaryTintColor,
+        textStyle: TextStyle(color: cWhiteColor, fontSize: 16, fontWeight: FontWeight.bold),
         isCircularHead: true,
         label: 'Save',
         onPressed: () {

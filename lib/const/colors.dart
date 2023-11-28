@@ -13,6 +13,7 @@ const Color cBackgroundNeutralColor2 = Color(0xFFEFEFEF);
 const Color cBackgroundNeutralColor3 = Color.fromARGB(255, 218, 218, 218);
 const Color cOutLineColor = Color(0xFFCBCCCD);
 const Color cWhiteColor = Color(0xFFFFFFFF);
+const Color cDarkColor = Color(0xFF35363A);
 const Color cWarningColor = Color(0xFFFFBB0D);
 const Color cSuccessColor = Color(0xFF00D261);
 const Color cRedAccentColor = Color(0xFFF76554);
@@ -21,7 +22,7 @@ const Color cPlaceHolderColor = Color(0xFFAEAEAE);
 const Color splashScreenBackground = Color(0xFFF5F3FD);
 
 //* new color
-const Color cPrimaryTintColor = Color(0xFF98A8FF);
+const Color cPrimaryTintColor = Color.fromRGBO(152, 168, 255, 1);
 const Color cDisabledTextColor = Color.fromARGB(255, 205, 213, 254);
 const Color cBlueAccent = Color(0XFFECEBFF);
 const Color cBlueShade = Color(0XFFB8B1FF);
