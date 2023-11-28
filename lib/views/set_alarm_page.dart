@@ -55,9 +55,7 @@ class SetAlarm extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              const SizedBox(
-                height: 20,
-              ),
+              // kH10sizedBox,
               Container(
                 height: 40,
                 width: width - 160,

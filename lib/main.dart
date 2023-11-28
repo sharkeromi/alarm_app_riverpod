@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Alarm.init(showDebugLogs: true);
   runApp(const ProviderScope(child: MyApp()));
@@ -27,8 +27,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: cPrimaryColor),
+        // brightness: Brightness.light,
         useMaterial3: false,
       ),
+      // darkTheme: ThemeData(
+      //   brightness: Brightness.dark,
+      //   /* dark theme settings */
+      // ),
+      // themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
       routerConfig: goRouter,
     );

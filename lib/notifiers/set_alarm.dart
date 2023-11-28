@@ -113,6 +113,10 @@ class SetAlarmNotifier extends ChangeNotifier {
     }
   }
 
+  void tempReset() async {
+    await SpController().deleteAllData();
+  }
+
   void saveAlarm() async {
     alarmList.clear();
     // await SpController().deleteAllData();
@@ -135,7 +139,7 @@ class SetAlarmNotifier extends ChangeNotifier {
     final alarmSettings = AlarmSettings(
       id: id,
       dateTime: selectedDateTime,
-      assetAudioPath: ringtonePath,
+      assetAudioPath: ringtonePath != '' ? ringtonePath : 'assets/marimba.mp3',
       loopAudio: true,
       vibrate: vibration,
       volumeMax: true,

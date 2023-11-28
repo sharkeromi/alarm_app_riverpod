@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:alarm/alarm.dart';
 import 'package:alarm_app_riverpod/const/colors.dart';
@@ -61,6 +62,7 @@ class HomePage extends ConsumerWidget {
                 elevation: 0,
                 shape: const CircleBorder(),
                 onPressed: () {
+                  // setAlarmNotifier.tempReset();
                   goRouter.push(krSetAlarm);
                 },
                 backgroundColor: cPasteColor,
@@ -92,90 +94,92 @@ class HomePage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: setAlarmNotifier.alarmList.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      final switchState = ref.watch(setAlarmNotifier.switchProvider(index));
-                      var item = setAlarmNotifier.alarmList;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
-                        child: InkWell(
-                          splashColor: cPrimaryColor,
-                          onLongPress: () {
-                            ref.read(setAlarmNotifier.enableDeleteOption.notifier).state = true;
-                            ref.read(setAlarmNotifier.selectedId.notifier).state = item[index]['id'];
-                            ref.read(setAlarmNotifier.selectedIndex.notifier).state = index;
-                          },
-                          child: Container(
-                            width: width - 20,
-                            decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.all(Radius.circular(20)),
-                                color: cPrimaryTintColor,
-                                boxShadow: [BoxShadow(color: cTextPrimaryColor.withOpacity(.2), blurRadius: 10, offset: Offset(0, 5))]),
-                            child: Padding(
-                              padding: const EdgeInsets.all(22.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        item[index]['time'],
-                                        style: TextStyle(color: switchState ? cWhiteColor : cDisabledTextColor, fontSize: 28),
-                                      ),
-                                      Transform.scale(
-                                        scale: .7,
-                                        child: CupertinoSwitch(
-                                          activeColor: cPinkColor,
-                                          thumbColor: cWhiteColor,
-                                          trackColor: cPrimaryColor,
-                                          value: switchState,
-                                          onChanged: (v) {
-                                            ref.read(setAlarmNotifier.switchProvider(index).notifier).state = v;
-
-                                            if (!ref.read(setAlarmNotifier.switchProvider(index).notifier).state == true) {
-                                              Alarm.stop(item[index]['id']);
-                                              item[index]['isAlarmOn'] = false;
-                                            } else {
-                                              item[index]['isAlarmOn'] = true;
-                                              final alarmSettings = AlarmSettings(
-                                                id: item[index]['id'],
-                                                dateTime: setAlarmNotifier.setAlarmTimeAgain(item[index]['dateTime']),
-                                                assetAudioPath: 'assets/marimba.mp3',
-                                                loopAudio: true,
-                                                vibrate: item[index]['vibration'],
-                                                volumeMax: true,
-                                                fadeDuration: 3.0,
-                                                notificationTitle: 'This is the title',
-                                                notificationBody: 'This is the body',
-                                                enableNotificationOnKill: true,
-                                              );
-                                              Alarm.set(alarmSettings: alarmSettings);
-                                            }
-                                          },
+                if (setAlarmNotifier.alarmList.isNotEmpty)
+                  ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: setAlarmNotifier.alarmList.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final switchState = ref.watch(setAlarmNotifier.switchProvider(index));
+                        var item = setAlarmNotifier.alarmList;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: InkWell(
+                            splashColor: cPrimaryColor,
+                            onLongPress: () {
+                              ref.read(setAlarmNotifier.enableDeleteOption.notifier).state = true;
+                              log(setAlarmNotifier.alarmList.length.toString());
+                              ref.read(setAlarmNotifier.selectedId.notifier).state = item[index]['id'];
+                              ref.read(setAlarmNotifier.selectedIndex.notifier).state = index;
+                            },
+                            child: Container(
+                              width: width - 20,
+                              decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                  color: cPrimaryTintColor,
+                                  boxShadow: [BoxShadow(color: cTextPrimaryColor.withOpacity(.2), blurRadius: 10, offset: Offset(0, 5))]),
+                              child: Padding(
+                                padding: const EdgeInsets.all(22.0),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          item[index]['time'],
+                                          style: TextStyle(color: item[index]['isAlarmOn'] ? cWhiteColor : cDisabledTextColor, fontSize: 28),
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                  kH16sizedBox,
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        item[index]['repeat'],
-                                        style: TextStyle(color: switchState ? cWhiteColor : cDisabledTextColor, fontSize: 16),
-                                      )
-                                    ],
-                                  )
-                                ],
+                                        Transform.scale(
+                                          scale: .7,
+                                          child: CupertinoSwitch(
+                                            activeColor: cPinkColor,
+                                            thumbColor: cWhiteColor,
+                                            trackColor: cPrimaryColor,
+                                            value: item[index]['isAlarmOn'],
+                                            onChanged: (v) {
+                                              ref.read(setAlarmNotifier.switchProvider(index).notifier).state = v;
+
+                                              if (!ref.read(setAlarmNotifier.switchProvider(index).notifier).state == true) {
+                                                Alarm.stop(item[index]['id']);
+                                                item[index]['isAlarmOn'] = false;
+                                              } else {
+                                                item[index]['isAlarmOn'] = true;
+                                                final alarmSettings = AlarmSettings(
+                                                  id: item[index]['id'],
+                                                  dateTime: setAlarmNotifier.setAlarmTimeAgain(item[index]['dateTime']),
+                                                  assetAudioPath: 'assets/marimba.mp3',
+                                                  loopAudio: true,
+                                                  vibrate: item[index]['vibration'],
+                                                  volumeMax: true,
+                                                  fadeDuration: 3.0,
+                                                  notificationTitle: 'This is the title',
+                                                  notificationBody: 'This is the body',
+                                                  enableNotificationOnKill: true,
+                                                );
+                                                Alarm.set(alarmSettings: alarmSettings);
+                                              }
+                                            },
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    kH16sizedBox,
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          item[index]['repeat'],
+                                          style: TextStyle(color: item[index]['isAlarmOn'] ? cWhiteColor : cDisabledTextColor, fontSize: 16),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    }),
+                        );
+                      }),
                 kH40sizedBox,
                 kH20sizedBox,
                 kH10sizedBox
