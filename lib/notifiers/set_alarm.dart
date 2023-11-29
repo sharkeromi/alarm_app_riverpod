@@ -113,10 +113,6 @@ class SetAlarmNotifier extends ChangeNotifier {
     }
   }
 
-  void tempReset() async {
-    await SpController().deleteAllData();
-  }
-
   void saveAlarm() async {
     alarmList.clear();
     // await SpController().deleteAllData();
