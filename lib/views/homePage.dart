@@ -5,6 +5,7 @@ import 'package:alarm_app_riverpod/const/colors.dart';
 import 'package:alarm_app_riverpod/const/routes.dart';
 import 'package:alarm_app_riverpod/controllers/sp_controller.dart';
 import 'package:alarm_app_riverpod/providers.dart';
+import 'package:alarm_app_riverpod/views/clock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +34,7 @@ class HomePage extends ConsumerWidget {
             setAlarmNotifier.selectedRepeatType = 'Daily';
             goRouter.push(krSetAlarm);
           },
-          backgroundColor: cPasteColor,
+          backgroundColor: cPrimaryColor,
           child: const Icon(
             Icons.add,
             color: cWhiteColor,
@@ -41,38 +42,58 @@ class HomePage extends ConsumerWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        elevation: 0,
-        title: Padding(
-          padding: const EdgeInsets.only(left: 6.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Alarms',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
-              ),
-              kH8sizedBox,
-              if (setAlarmNotifier.alarmList.isNotEmpty && setAlarmNotifier.getNextAlarmETA() != null)
-                Text(
-                  setAlarmNotifier.getNextAlarmETA() ?? '',
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
-                )
-            ],
-          ),
-        ),
-      ),
-      body: SizedBox(
-        height: height,
-        width: width,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+      // appBar: AppBar(
+      //   backgroundColor: Theme.of(context).colorScheme.background,
+      //   elevation: 0,
+      //   title: Padding(
+      //     padding: const EdgeInsets.only(left: 6.0),
+      //     child: Column(
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         const Text(
+      //           'Alarms',
+      //           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
+      //         ),
+      //         kH8sizedBox,
+      //         if (setAlarmNotifier.alarmList.isNotEmpty && setAlarmNotifier.getNextAlarmETA() != null)
+      //           Text(
+      //             setAlarmNotifier.getNextAlarmETA() ?? '',
+      //             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
+      //           )
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      body: ShaderMask(
+        shaderCallback: (Rect bounds) {
+          return LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: <Color>[cTransparentColor, cWhiteColor],
+            stops: [0.0, 0.5],
+          ).createShader(bounds);
+        },
+        blendMode: BlendMode.dstIn,
+        child: SizedBox(
+          height: height,
+          width: width,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                ClockView(),
+                // if (setAlarmNotifier.alarmList.isNotEmpty)
+                //   const Text(
+                //     'Alarms',
+                //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
+                //   ),
+                // kH8sizedBox,
+                if (setAlarmNotifier.alarmList.isNotEmpty && setAlarmNotifier.getNextAlarmETA() != null)
+                  Text(
+                    setAlarmNotifier.getNextAlarmETA() ?? '',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
+                  ),
                 if (setAlarmNotifier.alarmList.isNotEmpty)
                   ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
@@ -82,7 +103,7 @@ class HomePage extends ConsumerWidget {
                         final switchState = ref.watch(setAlarmNotifier.switchProvider(index));
                         var item = setAlarmNotifier.alarmList[index];
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
+                          padding: const EdgeInsets.only(bottom: 12.0, right: 20, left: 20),
                           child: InkWell(
                             splashColor: cPrimaryColor,
                             onTap: () {
@@ -207,6 +228,9 @@ class HomePage extends ConsumerWidget {
                           ),
                         );
                       }),
+                kH40sizedBox,
+                kH40sizedBox,
+                kH40sizedBox,
                 kH40sizedBox,
                 kH20sizedBox,
                 kH10sizedBox
