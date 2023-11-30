@@ -45,7 +45,11 @@ class SetAlarm extends ConsumerWidget {
         isCircularHead: true,
         label: 'Save',
         onPressed: () {
-          setAlarmNotifier.saveAlarm();
+          if (setAlarmNotifier.isEditModeOn) {
+            setAlarmNotifier.editAlarm(setAlarmNotifier.selectedId);
+          } else {
+            setAlarmNotifier.saveAlarm();
+          }
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -138,7 +142,7 @@ class SetAlarm extends ConsumerWidget {
               SizedBox(
                 height: 200,
                 child: CupertinoDatePicker(
-                    initialDateTime: DateTime.now(),
+                    initialDateTime: ref.watch(setAlarmNotifier.pickedTimeProvider),
                     mode: CupertinoDatePickerMode.time,
                     use24hFormat: !ref.watch(setAlarmNotifier.firstButtonClicked),
                     onDateTimeChanged: (v) {

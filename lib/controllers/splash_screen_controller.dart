@@ -37,22 +37,23 @@ class SplashScreenController extends ChangeNotifier {
         log('Alarm is enabled');
       } else {
         log('Alarm is disabled');
-        if (alarmList[i]['repeat'] == "Once") {
-          alarmList[i]['isAlarmOn'] = false;
-        } else if (alarmList[i]['repeat'] == "Daily") {
-          alarmList[i]['isAlarmOn'] = true;
-          DateTime selectedDateTime = DateTime.parse(alarmList[i]['dateTime']);
-          if (selectedDateTime.isBefore(DateTime.now())) {
-            selectedDateTime = selectedDateTime.add(const Duration(days: 1));
+        if (alarmList[i]['isAlarmOn']) {
+          if (alarmList[i]['repeat'] == "Once") {
+            alarmList[i]['isAlarmOn'] = false;
+          } else if (alarmList[i]['repeat'] == "Daily") {
+            alarmList[i]['isAlarmOn'] = true;
+            DateTime selectedDateTime = DateTime.parse(alarmList[i]['dateTime']);
+            if (selectedDateTime.isBefore(DateTime.now())) {
+              selectedDateTime = selectedDateTime.add(const Duration(days: 1));
+            }
+            alarmList[i]['dateTime'] = selectedDateTime.toString();
           }
-          alarmList[i]['dateTime'] = selectedDateTime.toString();
         }
       }
     }
-    // setAlarmNotifier.alarmList = alarmList;
     await _spController.deleteAllData();
-    for(int i = 0; i<alarmList.length; i++){
-    await _spController.saveAlarmList(alarmList[i]);
+    for (int i = 0; i < alarmList.length; i++) {
+      await _spController.saveAlarmList(alarmList[i]);
     }
     setAlarmNotifier.alarmList.clear();
     setAlarmNotifier.alarmList = await _spController.getAlarmList();

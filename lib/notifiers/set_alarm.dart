@@ -15,13 +15,14 @@ class SetAlarmNotifier extends ChangeNotifier {
   List weekDays = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
   List<String> selectedDays = [];
   List<dynamic> alarmList = [];
+  bool isEditModeOn = false;
 
   final pickedTimeProvider = StateProvider<DateTime>((ref) => DateTime.now());
   final switchProvider = StateProvider.family<bool, int>((ref, index) => true);
   String pickedTime = '';
   DateTime selectedDateTime = DateTime.now();
   final tempSelectedRepeatType = StateProvider<String>((ref) => '');
-  final selectedId = StateProvider<int>((ref) => -1);
+  int selectedId = -1;
   final selectedIndex = StateProvider<int>((ref) => -1);
   // final selectedRepeatType = StateProvider<String>((ref) => '');
   String selectedRepeatType = '';
@@ -57,6 +58,7 @@ class SetAlarmNotifier extends ChangeNotifier {
 
   void pickTime(time) {
     selectedDateTime = time;
+    log(selectedDateTime.toString());
     if (selectedDateTime.isBefore(DateTime.now())) {
       selectedDateTime = selectedDateTime.add(const Duration(days: 1));
     }
@@ -145,5 +147,61 @@ class SetAlarmNotifier extends ChangeNotifier {
       enableNotificationOnKill: false,
     );
     Alarm.set(alarmSettings: alarmSettings);
+  }
+
+  void editAlarm(id) async {
+    for (int i = 0; i < alarmList.length; i++) {
+      if (i == id) {
+        alarmList[i]['time'] = pickedTime;
+        alarmList[i]['dateTime'] = selectedDateTime.toString();
+        alarmList[i]['repeat'] = selectedRepeatType;
+        alarmList[i]['vibration'] = vibration;
+        alarmList[i]['ringtone'] = ringtonePath != '' ? ringtonePath : 'assets/marimba.mp3';
+        alarmList[i]['isAlarmOn'] = true;
+        await SpController().deleteAllData();
+        for (int i = 0; i < alarmList.length; i++) {
+          await SpController().saveAlarmList(alarmList[i]);
+        }
+        alarmList.clear();
+        alarmList = await SpController().getAlarmList();
+        goRouter.pop();
+        final alarmSettings = AlarmSettings(
+          id: alarmList[i]['id'],
+          dateTime: selectedDateTime,
+          assetAudioPath: ringtonePath != '' ? ringtonePath : 'assets/marimba.mp3',
+          loopAudio: true,
+          vibrate: vibration,
+          volumeMax: true,
+          fadeDuration: 3.0,
+          notificationTitle: 'This is the title',
+          notificationBody: 'This is the body',
+          enableNotificationOnKill: false,
+        );
+        Alarm.set(alarmSettings: alarmSettings);
+      }
+    }
+  }
+
+  String? getNextAlarmETA() {
+    Duration minDiff = const Duration(days: 365);
+    for (int i = 0; i < alarmList.length; i++) {
+      if (alarmList[i]['isAlarmOn']) {
+        DateTime dt1 = DateTime.parse(alarmList[i]['dateTime']);
+        Duration diff = dt1.difference(DateTime.now());
+        if (minDiff.inSeconds > diff.inSeconds) {
+          minDiff = diff;
+        }
+      }
+    }
+    if (minDiff.inDays.abs() == 0 && minDiff.inHours.remainder(24).abs() != 0) {
+      return 'Next alarm in ${minDiff.inHours.remainder(24).abs()} hours ${minDiff.inMinutes.remainder(60).abs()} minutes';
+    } else if (minDiff.inDays.abs() == 0 && minDiff.inHours.remainder(24).abs() == 0) {
+      return 'Next alarm in ${minDiff.inMinutes.remainder(60).abs()} minutes';
+    } else if (minDiff.inDays.abs() == 365) {
+      log('yes');
+      return null;
+    } else {
+      return 'Next alarm in ${minDiff.inDays.abs()} day ${minDiff.inHours.remainder(24).abs()} hours ${minDiff.inMinutes.remainder(60).abs()} minutes';
+    }
   }
 }

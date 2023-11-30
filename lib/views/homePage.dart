@@ -1,4 +1,5 @@
 import 'dart:developer';
+
 import 'package:alarm/alarm.dart';
 import 'package:alarm_app_riverpod/const/colors.dart';
 import 'package:alarm_app_riverpod/const/routes.dart';
@@ -27,6 +28,9 @@ class HomePage extends ConsumerWidget {
           shape: const CircleBorder(),
           onPressed: () {
             // setAlarmNotifier.tempReset();
+            setAlarmNotifier.isEditModeOn = false;
+            ref.read(setAlarmNotifier.pickedTimeProvider.notifier).state = DateTime.now();
+            setAlarmNotifier.selectedRepeatType = 'Daily';
             goRouter.push(krSetAlarm);
           },
           backgroundColor: cPasteColor,
@@ -40,11 +44,22 @@ class HomePage extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         elevation: 0,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 6.0),
-          child: Text(
-            'Alarms',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 6.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Alarms',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
+              ),
+              kH8sizedBox,
+              if (setAlarmNotifier.alarmList.isNotEmpty && setAlarmNotifier.getNextAlarmETA() != null)
+                Text(
+                  setAlarmNotifier.getNextAlarmETA() ?? '',
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: cPrimaryTintColor),
+                )
+            ],
           ),
         ),
       ),
@@ -65,12 +80,20 @@ class HomePage extends ConsumerWidget {
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         final switchState = ref.watch(setAlarmNotifier.switchProvider(index));
-                        var item = setAlarmNotifier.alarmList;
+                        var item = setAlarmNotifier.alarmList[index];
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12.0),
                           child: InkWell(
                             splashColor: cPrimaryColor,
-                            onTap: () {},
+                            onTap: () {
+                              setAlarmNotifier.isEditModeOn = true;
+                              ref.read(setAlarmNotifier.pickedTimeProvider.notifier).state = DateTime.parse(item['dateTime']);
+                              setAlarmNotifier.selectedRepeatType = item['repeat'];
+                              ref.read(setAlarmNotifier.isVibrationOn.notifier).state = item['vibration'];
+                              setAlarmNotifier.selectedId = index;
+                              // setAlarmNotifier.ringtone = item[index]['ringtone'] == 'assets/marimba.mp3'? 'Default': item[index]['ringtone'];
+                              goRouter.push(krSetAlarm);
+                            },
                             child: Slidable(
                               endActionPane: ActionPane(
                                 extentRatio: 0.2,
@@ -80,8 +103,10 @@ class HomePage extends ConsumerWidget {
                                     builder: (cont) {
                                       return ElevatedButton(
                                         onPressed: () async {
+                                          log(index.toString());
+                                          // return;
                                           Slidable.of(cont)!.close();
-                                          Alarm.stop(item[index]['id']);
+                                          Alarm.stop(item['id']);
                                           setAlarmNotifier.alarmList.removeAt(index);
                                           await SpController().deleteAlarm(index);
                                           setAlarmNotifier.update();
@@ -123,8 +148,8 @@ class HomePage extends ConsumerWidget {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            item[index]['time'],
-                                            style: TextStyle(color: item[index]['isAlarmOn'] ? cWhiteColor : cDisabledTextColor, fontSize: 28),
+                                            item['time'],
+                                            style: TextStyle(color: item['isAlarmOn'] ? cWhiteColor : cDisabledTextColor, fontSize: 28),
                                           ),
                                           Transform.scale(
                                             scale: .7,
@@ -132,21 +157,21 @@ class HomePage extends ConsumerWidget {
                                               activeColor: cPinkColor,
                                               thumbColor: cWhiteColor,
                                               trackColor: cPrimaryColor,
-                                              value: item[index]['isAlarmOn'],
-                                              onChanged: (v) {
+                                              value: item['isAlarmOn'],
+                                              onChanged: (v) async {
                                                 ref.read(setAlarmNotifier.switchProvider(index).notifier).state = v;
 
                                                 if (!ref.read(setAlarmNotifier.switchProvider(index).notifier).state == true) {
-                                                  Alarm.stop(item[index]['id']);
-                                                  item[index]['isAlarmOn'] = false;
+                                                  Alarm.stop(item['id']);
+                                                  item['isAlarmOn'] = false;
                                                 } else {
-                                                  item[index]['isAlarmOn'] = true;
+                                                  item['isAlarmOn'] = true;
                                                   final alarmSettings = AlarmSettings(
-                                                    id: item[index]['id'],
-                                                    dateTime: setAlarmNotifier.setAlarmTimeAgain(item[index]['dateTime']),
+                                                    id: item['id'],
+                                                    dateTime: setAlarmNotifier.setAlarmTimeAgain(item['dateTime']),
                                                     assetAudioPath: 'assets/marimba.mp3',
                                                     loopAudio: true,
-                                                    vibrate: item[index]['vibration'],
+                                                    vibrate: item['vibration'],
                                                     volumeMax: true,
                                                     fadeDuration: 3.0,
                                                     notificationTitle: 'This is the title',
@@ -154,6 +179,10 @@ class HomePage extends ConsumerWidget {
                                                     enableNotificationOnKill: true,
                                                   );
                                                   Alarm.set(alarmSettings: alarmSettings);
+                                                }
+                                                await SpController().deleteAllData();
+                                                for (int i = 0; i < setAlarmNotifier.alarmList.length; i++) {
+                                                  await SpController().saveAlarmList(setAlarmNotifier.alarmList[i]);
                                                 }
                                               },
                                             ),
@@ -165,8 +194,8 @@ class HomePage extends ConsumerWidget {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            item[index]['repeat'],
-                                            style: TextStyle(color: item[index]['isAlarmOn'] ? cWhiteColor : cDisabledTextColor, fontSize: 16),
+                                            item['repeat'],
+                                            style: TextStyle(color: item['isAlarmOn'] ? cWhiteColor : cDisabledTextColor, fontSize: 16),
                                           )
                                         ],
                                       )
