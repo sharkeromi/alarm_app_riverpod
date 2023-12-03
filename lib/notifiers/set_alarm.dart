@@ -111,7 +111,11 @@ class SetAlarmNotifier extends ChangeNotifier {
       return '${duration.inHours.abs()} hours ${duration.inMinutes.remainder(60).abs()} minutes';
     } else {
       Duration duration = DateTime.now().difference(setAlarm);
-      return '${duration.inHours.abs()} hours ${duration.inMinutes.remainder(60).abs()} minutes';
+      if (duration.inHours == 0) {
+        return '${duration.inMinutes.remainder(60).abs() + 1} minutes';
+      } else {
+        return '${duration.inHours.abs()} hours ${duration.inMinutes.remainder(60).abs() + 1} minutes';
+      }
     }
   }
 
@@ -190,18 +194,71 @@ class SetAlarmNotifier extends ChangeNotifier {
         Duration diff = dt1.difference(DateTime.now());
         if (minDiff.inSeconds > diff.inSeconds) {
           minDiff = diff;
+          log('text: ${minDiff.inMinutes}');
         }
       }
     }
     if (minDiff.inDays.abs() == 0 && minDiff.inHours.remainder(24).abs() != 0) {
       return 'Next alarm in ${minDiff.inHours.remainder(24).abs()} hours ${minDiff.inMinutes.remainder(60).abs()} minutes';
     } else if (minDiff.inDays.abs() == 0 && minDiff.inHours.remainder(24).abs() == 0) {
-      return 'Next alarm in ${minDiff.inMinutes.remainder(60).abs()} minutes';
+      return 'Next alarm in ${minDiff.inMinutes.remainder(60).abs() + 1} minutes';
     } else if (minDiff.inDays.abs() == 365) {
       log('yes');
       return null;
     } else {
       return 'Next alarm in ${minDiff.inDays.abs()} day ${minDiff.inHours.remainder(24).abs()} hours ${minDiff.inMinutes.remainder(60).abs()} minutes';
     }
+  }
+
+  double startingAngle() {
+    double startingAngle = 0.0;
+    Duration minDiff = const Duration(minutes: 720);
+    for (int i = 0; i < alarmList.length; i++) {
+      if (alarmList[i]['isAlarmOn']) {
+        DateTime dt1 = DateTime.parse(alarmList[i]['dateTime']);
+        Duration diff = dt1.difference(DateTime.now());
+        if (minDiff.inMinutes > diff.inMinutes) {
+          minDiff = diff;
+        }
+        if (minDiff.inMinutes <= 720) {
+          DateTime alarmTime = DateTime.parse(alarmList[i]['dateTime']);
+          String formattedTime = DateFormat('hh:mm').format(alarmTime);
+          List<String> parts = formattedTime.split(":");
+          int hours = int.parse(parts[0]);
+          int minutes = int.parse(parts[1]);
+          double decimalTime = hours + minutes / 60;
+          startingAngle = 360 - ((720 - (decimalTime * 60)) / 2);
+          // log(startingAngle.toString());
+        } else {
+          startingAngle = 0;
+        }
+      }
+    }
+    return startingAngle;
+  }
+
+  double setPercent() {
+    Duration minDiff = const Duration(minutes: 720);
+    double percent = 0;
+    for (int i = 0; i < alarmList.length; i++) {
+      if (alarmList[i]['isAlarmOn']) {
+        DateTime dt1 = DateTime.parse(alarmList[i]['dateTime']);
+        Duration diff = dt1.difference(DateTime.now());
+        log(diff.inMinutes.toString());
+        if (minDiff.inMinutes > diff.inMinutes) {
+          minDiff = diff;
+        }
+        if (minDiff.inMinutes < 720) {
+          percent = ((minDiff.inMinutes + 1) / 720);
+          // log(minDiff.inMinutes.toString());
+          // log(percent.toString());
+        } else {
+          percent = 0;
+        }
+      } else {
+        percent = 0;
+      }
+    }
+    return percent;
   }
 }

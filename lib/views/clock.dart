@@ -1,8 +1,8 @@
-import 'dart:async';
 import 'dart:math';
-
-import 'package:alarm_app_riverpod/const/colors.dart';
+import 'dart:async';
+import 'package:alarm_app_riverpod/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:alarm_app_riverpod/const/colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -23,6 +23,7 @@ class ClockViewState extends ConsumerState<ClockView> {
 
   @override
   Widget build(BuildContext context) {
+    final setAlarmNotifier = ref.watch(setAlarmChangeNotifierProvider);
     return Stack(
       children: [
         SizedBox(
@@ -40,14 +41,14 @@ class ClockViewState extends ConsumerState<ClockView> {
           left: 18,
           child: CircularPercentIndicator(
             radius: 95,
-            startAngle: 210,
+            startAngle: setAlarmNotifier.startingAngle(),
             lineWidth: 15.0,
             circularStrokeCap: CircularStrokeCap.round,
             // widgetIndicator: Icon(Icons.alarm),
             animation: true,
             animateFromLastPercent: true,
             reverse: true,
-            percent: .1667,
+            percent: setAlarmNotifier.setPercent(),
             progressColor: cPrimaryColor,
           ),
         )

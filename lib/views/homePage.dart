@@ -66,7 +66,7 @@ class HomePage extends ConsumerWidget {
       // ),
       body: ShaderMask(
         shaderCallback: (Rect bounds) {
-          return LinearGradient(
+          return const LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: <Color>[cTransparentColor, cWhiteColor],
