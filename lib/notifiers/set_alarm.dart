@@ -16,9 +16,20 @@ class SetAlarmNotifier extends ChangeNotifier {
   List<String> selectedDays = [];
   List<dynamic> alarmList = [];
   bool isEditModeOn = false;
+  List customDays = [];
+  final List<bool> selectedDayState = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
 
   final pickedTimeProvider = StateProvider<DateTime>((ref) => DateTime.now());
   final switchProvider = StateProvider.family<bool, int>((ref, index) => true);
+  final isDaySelected = StateProvider.family<bool, int>((ref, index) => false);
   String pickedTime = '';
   DateTime selectedDateTime = DateTime.now();
   final tempSelectedRepeatType = StateProvider<String>((ref) => '');
@@ -58,11 +69,11 @@ class SetAlarmNotifier extends ChangeNotifier {
 
   void pickTime(time) {
     selectedDateTime = time;
-    log(selectedDateTime.toString());
-    if (selectedDateTime.isBefore(DateTime.now())) {
+    if (selectedDateTime.isBefore(DateTime.now()) && selectedRepeatType != 'Custom') {
       selectedDateTime = selectedDateTime.add(const Duration(days: 1));
     }
-    pickedTime = DateFormat('HH:mm a').format(time);
+    log(selectedDateTime.toString());
+    pickedTime = DateFormat('HH:mm').format(time);
     notifyListeners();
   }
 
@@ -117,40 +128,6 @@ class SetAlarmNotifier extends ChangeNotifier {
         return '${duration.inHours.abs()} hours ${duration.inMinutes.remainder(60).abs() + 1} minutes';
       }
     }
-  }
-
-  void saveAlarm() async {
-    alarmList.clear();
-    // await SpController().deleteAllData();
-    var id = DateTime.now().millisecondsSinceEpoch % 10000;
-    Map<String, dynamic> alarmDetails = {
-      'id': id,
-      "time": pickedTime,
-      "dateTime": selectedDateTime.toString(),
-      "repeat": selectedRepeatType,
-      "vibration": vibration,
-      "ringtone": ringtonePath != '' ? ringtonePath : 'assets/marimba.mp3',
-      "isAlarmOn": true
-    };
-    String encodedMap = json.encode(alarmDetails);
-    await SpController().saveAlarmDetails(encodedMap);
-    await SpController().saveAlarmList(alarmDetails);
-    alarmList = await SpController().getAlarmList();
-    log(alarmList.toString());
-    goRouter.pop();
-    final alarmSettings = AlarmSettings(
-      id: id,
-      dateTime: selectedDateTime,
-      assetAudioPath: ringtonePath != '' ? ringtonePath : 'assets/marimba.mp3',
-      loopAudio: true,
-      vibrate: vibration,
-      volumeMax: true,
-      fadeDuration: 3.0,
-      notificationTitle: 'This is the title',
-      notificationBody: 'This is the body',
-      enableNotificationOnKill: false,
-    );
-    Alarm.set(alarmSettings: alarmSettings);
   }
 
   void editAlarm(id) async {
@@ -260,5 +237,85 @@ class SetAlarmNotifier extends ChangeNotifier {
       }
     }
     return percent;
+  }
+
+  void saveAlarm() async {
+    alarmList.clear();
+    // await SpController().deleteAllData();
+    customDays.clear();
+    if (selectedRepeatType == 'Custom') {
+      int closestDay = 8;
+      for (int i = 0; i < selectedDayState.length; i++) {
+        if (selectedDayState[i] == true) {
+          customDays.add(weekDays[i]);
+          if (closestDay > getDayOfWeek(weekDays[i])) {
+            closestDay = getDayOfWeek(weekDays[i]);
+          }
+        }
+      }
+      selectedDateTime = selectedDateTime.add(Duration(days: closestDay));
+    }
+    var id = DateTime.now().millisecondsSinceEpoch % 10000;
+    Map<String, dynamic> alarmDetails = {
+      'id': id,
+      "time": pickedTime,
+      "dateTime": selectedDateTime.toString(),
+      "repeat": selectedRepeatType,
+      "vibration": vibration,
+      "ringtone": ringtonePath != '' ? ringtonePath : 'assets/marimba.mp3',
+      "isAlarmOn": true,
+      "customDays": customDays
+    };
+    String encodedMap = json.encode(alarmDetails);
+    await SpController().saveAlarmDetails(encodedMap);
+    await SpController().saveAlarmList(alarmDetails);
+    alarmList = await SpController().getAlarmList();
+    log(alarmList.toString());
+    goRouter.pop();
+    final alarmSettings = AlarmSettings(
+      id: id,
+      dateTime: selectedDateTime,
+      assetAudioPath: ringtonePath != '' ? ringtonePath : 'assets/marimba.mp3',
+      loopAudio: true,
+      vibrate: vibration,
+      volumeMax: true,
+      fadeDuration: 3.0,
+      notificationTitle: 'This is the title',
+      notificationBody: 'This is the body',
+      enableNotificationOnKill: true,
+    );
+    Alarm.set(alarmSettings: alarmSettings);
+  }
+
+  int getDayOfWeek(String day) {
+    DateTime now = DateTime.now();
+    int currentDayOfWeek = now.weekday;
+    int targetDayOfWeek;
+
+    if (day == 'Sat') {
+      targetDayOfWeek = 6;
+    } else if (day == 'Sun') {
+      targetDayOfWeek = 7;
+    } else if (day == 'Mon') {
+      targetDayOfWeek = 1;
+    } else if (day == 'Tue') {
+      targetDayOfWeek = 2;
+    } else if (day == 'Wed') {
+      targetDayOfWeek = 3;
+    } else if (day == 'Thu') {
+      targetDayOfWeek = 4;
+    } else {
+      targetDayOfWeek = 5;
+    }
+    int daysToAdd = targetDayOfWeek - currentDayOfWeek;
+    if (daysToAdd < 0) {
+      daysToAdd += 7;
+    } else if (daysToAdd == 0 && now.isBefore(selectedDateTime)) {
+    } else if (daysToAdd == 0 && now.isAfter(selectedDateTime)) {
+      daysToAdd += 7;
+    }
+    log(now.add(Duration(days: daysToAdd)).toString());
+
+    return daysToAdd;
   }
 }

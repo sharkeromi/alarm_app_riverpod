@@ -188,19 +188,19 @@ class SetAlarm extends ConsumerWidget {
                               },
                               onPressRightButton: () {
                                 Navigator.pop(context);
-                                if (ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state == 'Custom') {
-                                  globalController.commonBottomSheet(
-                                      context: context,
-                                      content: const CustomRepeatTypeBottomSheetContent(),
-                                      onPressCloseButton: () {
-                                        Navigator.pop(context);
-                                      },
-                                      onPressRightButton: () {},
-                                      rightText: 'Done',
-                                      rightTextStyle: const TextStyle(color: cPrimaryColor, fontSize: 16),
-                                      title: 'Select custom days',
-                                      isRightButtonShow: true);
-                                }
+                                // if (ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state == 'Custom') {
+                                //   globalController.commonBottomSheet(
+                                //       context: context,
+                                //       content: const CustomRepeatTypeBottomSheetContent(),
+                                //       onPressCloseButton: () {
+                                //         Navigator.pop(context);
+                                //       },
+                                //       onPressRightButton: () {},
+                                //       rightText: 'Done',
+                                //       rightTextStyle: const TextStyle(color: cPrimaryColor, fontSize: 16),
+                                //       title: 'Select custom days',
+                                //       isRightButtonShow: true);
+                                // }
                                 // setAlarmNotifier.selectedRepeatType = ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state;
                                 setAlarmNotifier.setRepeatStatus(ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state);
                               },
@@ -210,6 +210,8 @@ class SetAlarm extends ConsumerWidget {
                               isRightButtonShow: true);
                         },
                       ),
+                      if (setAlarmNotifier.selectedRepeatType == 'Custom') kH12sizedBox,
+                      if (setAlarmNotifier.selectedRepeatType == 'Custom') const CustomAlarmShow(),
                       kH12sizedBox,
                       LinkUpTextRow(
                         prefixText: 'Vibration',
@@ -373,39 +375,52 @@ class CustomRepeatTypeBottomSheetContent extends ConsumerWidget {
   }
 }
 
-// class SelectRingtoneBottomSheetContent extends ConsumerWidget {
-//   const SelectRingtoneBottomSheetContent({super.key});
+class CustomAlarmShow extends ConsumerWidget {
+  const CustomAlarmShow({super.key});
 
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final setAlarmNotifier = ref.watch(setAlarmChangeNotifierProvider);
-//     return Column(
-//       children: [
-//         ListView.builder(
-//           physics: const NeverScrollableScrollPhysics(),
-//           shrinkWrap: true,
-//           itemCount: setAlarmNotifier.songs.length,
-//           itemBuilder: (BuildContext context, int index) {
-//             return Padding(
-//               padding: const EdgeInsets.only(bottom: 8),
-//               child: CustomListTile(
-//                 itemColor: ref.watch(setAlarmNotifier.tempSelectedRepeatType) == setAlarmNotifier.repeatType[index] ? cPrimaryTintColor : cWhiteColor,
-//                 onPressed: () {
-//                   ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state = setAlarmNotifier.repeatType[index];
-//                 },
-//                 borderColor: ref.watch(setAlarmNotifier.tempSelectedRepeatType) == setAlarmNotifier.repeatType[index] ? cPrimaryColor : cOutLineColor,
-//                 title: setAlarmNotifier.songs[index].path.split('/').last,
-//                 trailing: CustomRadioButton(
-//                   isSelected: ref.watch(setAlarmNotifier.tempSelectedRepeatType) == setAlarmNotifier.repeatType[index] ? true : false,
-//                   onChanged: () {
-//                     ref.read(setAlarmNotifier.tempSelectedRepeatType.notifier).state = setAlarmNotifier.repeatType[index];
-//                   },
-//                 ),
-//               ),
-//             );
-//           },
-//         ),
-//       ],
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final setAlarmNotifier = ref.watch(setAlarmChangeNotifierProvider);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (int index = 0; index < setAlarmNotifier.weekDays.length; index++)
+          InkWell(
+            //*first
+            onTap: () {
+              ref.read(setAlarmNotifier.isDaySelected(index).notifier).state = !ref.read(setAlarmNotifier.isDaySelected(index).notifier).state;
+              setAlarmNotifier.update();
+              if (ref.watch(setAlarmNotifier.isDaySelected(index))) {
+                setAlarmNotifier.selectedDayState[index] = true;
+              } else {
+                setAlarmNotifier.selectedDayState[index] = false;
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                    color: ref.read(setAlarmNotifier.isDaySelected(index).notifier).state ? cPinkColor : cPrimaryTintColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: ref.read(setAlarmNotifier.isDaySelected(index).notifier).state ? cPinkColor : cWhiteColor),
+                    boxShadow: ref.read(setAlarmNotifier.isDaySelected(index).notifier).state
+                        ? [BoxShadow(offset: Offset(0, 2), blurRadius: 3, color: cPrimaryColor)]
+                        : []),
+                child: Center(
+                  child: Text(
+                    setAlarmNotifier.weekDays[index].toString(),
+                    textAlign: TextAlign.center,
+                    style: ref.read(setAlarmNotifier.isDaySelected(index).notifier).state
+                        ? const TextStyle(color: cWhiteColor, fontSize: 12)
+                        : const TextStyle(color: cWhiteColor, fontSize: 12),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}

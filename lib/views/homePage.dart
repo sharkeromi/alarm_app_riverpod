@@ -29,6 +29,7 @@ class HomePage extends ConsumerWidget {
           shape: const CircleBorder(),
           onPressed: () {
             // setAlarmNotifier.tempReset();
+            // SpController().deleteAllData();
             setAlarmNotifier.isEditModeOn = false;
             ref.read(setAlarmNotifier.pickedTimeProvider.notifier).state = DateTime.now();
             setAlarmNotifier.selectedRepeatType = 'Daily';
@@ -112,6 +113,18 @@ class HomePage extends ConsumerWidget {
                               setAlarmNotifier.selectedRepeatType = item['repeat'];
                               ref.read(setAlarmNotifier.isVibrationOn.notifier).state = item['vibration'];
                               setAlarmNotifier.selectedId = index;
+                              if (item['repeat'] == 'Custom') {
+                                for (int i = 0; i < setAlarmNotifier.weekDays.length; i++) {
+                                  String day = setAlarmNotifier.weekDays[i];
+                                  if (item['customDays'].contains(day)) {
+                                    ref.read(setAlarmNotifier.isDaySelected(i).notifier).state = true;
+                                    setAlarmNotifier.selectedDayState[i] = true;
+                                  } else {
+                                    ref.read(setAlarmNotifier.isDaySelected(i).notifier).state = false;
+                                    setAlarmNotifier.selectedDayState[i] = false;
+                                  }
+                                }
+                              }
                               // setAlarmNotifier.ringtone = item[index]['ringtone'] == 'assets/marimba.mp3'? 'Default': item[index]['ringtone'];
                               goRouter.push(krSetAlarm);
                             },
